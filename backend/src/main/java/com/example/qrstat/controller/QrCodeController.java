@@ -30,11 +30,13 @@ public class QrCodeController {
 
     @PutMapping("/{code}")
     public ApiResponse<QrCodeResponse> update(@PathVariable String code, @Valid @RequestBody UpdateQrRequest request) {
+        qrImageService.evictCache(code);
         return ApiResponse.ok(qrCodeService.update(code, request));
     }
 
     @PutMapping("/{code}/enabled")
     public ApiResponse<QrCodeResponse> updateEnabled(@PathVariable String code, @RequestParam boolean enabled) {
+        qrImageService.evictCache(code);
         return ApiResponse.ok(qrCodeService.updateEnabled(code, enabled));
     }
 
@@ -51,9 +53,7 @@ public class QrCodeController {
     @GetMapping("/{code}/image")
     public void image(@PathVariable String code, HttpServletResponse response) throws Exception {
         response.setContentType("image/png");
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        response.setHeader("Pragma", "no-cache");
-        response.setHeader("Expires", "0");
+        response.setHeader("Cache-Control", "public, max-age=86400");
         qrImageService.writeQrImage(code, response.getOutputStream());
     }
 }

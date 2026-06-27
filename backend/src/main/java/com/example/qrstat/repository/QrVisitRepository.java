@@ -66,7 +66,7 @@ public class QrVisitRepository {
 
     public List<DayStatResponse> countByDay(String code, LocalDate startDate) {
         return jdbcTemplate.query(
-                "SELECT CAST(visit_date AS VARCHAR) AS day, COUNT(*) AS pv, COUNT(DISTINCT ip) AS uv " +
+                "SELECT CAST(visit_date AS VARCHAR) AS \"day\", COUNT(*) AS pv, COUNT(DISTINCT ip) AS uv " +
                         "FROM qr_visit WHERE qr_code = ? AND visit_date >= ? GROUP BY visit_date ORDER BY visit_date ASC",
                 new RowMapper<DayStatResponse>() {
                     @Override

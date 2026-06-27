@@ -1,15 +1,35 @@
 <template>
-  <div class="app">
-    <div v-if="!loggedIn" class="login-page">
-      <el-card class="login-card" shadow="never">
-        <div class="login-title">
-          <h1>二维码访问统计</h1>
-          <p>后台管理需要登录；用户扫码跳转不受影响。</p>
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100">
+    <!-- ============ 登录页 ============ -->
+    <div v-if="!loggedIn" class="min-h-screen flex items-center justify-center p-4">
+      <!-- 背景装饰圆 -->
+      <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+      </div>
+
+      <div class="glass rounded-2xl shadow-xl w-full max-w-md p-8 animate-fade-in relative">
+        <!-- Logo / 标题 -->
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+          </div>
+          <h1 class="text-2xl font-bold text-gray-800">二维码访问统计</h1>
+          <p class="text-gray-500 text-sm mt-2">后台管理需要登录，用户扫码跳转不受影响</p>
         </div>
 
-        <el-form label-width="70px" :model="loginForm" @keyup.enter.native="handleLogin">
+        <!-- 登录表单 -->
+        <el-form ref="loginForm" :model="loginForm" @keyup.enter.native="handleLogin" label-position="top">
           <el-form-item label="用户名">
-            <el-input v-model="loginForm.username" placeholder="admin" autocomplete="username" />
+            <el-input
+              v-model="loginForm.username"
+              placeholder="admin"
+              autocomplete="username"
+              prefix-icon="el-icon-user"
+              class="rounded-lg"
+            />
           </el-form-item>
 
           <el-form-item label="密码">
@@ -19,164 +39,309 @@
               placeholder="请输入密码"
               autocomplete="current-password"
               show-password
+              prefix-icon="el-icon-lock"
+              class="rounded-lg"
             />
           </el-form-item>
 
-          <el-form-item>
-            <el-button type="primary" :loading="loginLoading" @click="handleLogin">登录</el-button>
+          <el-form-item class="mb-0">
+            <el-button
+              type="primary"
+              :loading="loginLoading"
+              @click="handleLogin"
+              class="w-full rounded-xl h-11 text-base font-medium tracking-wide"
+            >
+              登 录
+            </el-button>
           </el-form-item>
         </el-form>
-
-      </el-card>
+      </div>
     </div>
 
+    <!-- ============ 主界面 ============ -->
     <template v-else>
-      <div class="header">
-        <div>
-          <h1>二维码访问统计</h1>
-          <p>创建统计二维码，扫码后记录访问并自动跳转到目标网站。</p>
+      <!-- 顶部导航栏 -->
+      <header class="bg-white/80 backdrop-blur-md border-b border-gray-200/60 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-sm">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                </svg>
+              </div>
+              <div>
+                <h1 class="text-lg font-bold text-gray-800 leading-tight">二维码访问统计</h1>
+                <p class="text-xs text-gray-400">创建统计二维码，扫码后记录访问并自动跳转</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-400 hidden sm:inline">
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                  {{ username || 'admin' }}
+                </span>
+              </span>
+              <el-button size="mini" @click="loadList" class="rounded-lg" icon="el-icon-refresh">刷新</el-button>
+              <el-button size="mini" @click="logout" class="rounded-lg" type="danger" plain icon="el-icon-switch-button">退出</el-button>
+            </div>
+          </div>
         </div>
-        <div class="header-actions">
-          <span class="muted">当前用户：{{ username || 'admin' }}</span>
-          <el-button type="primary" @click="loadList">刷新列表</el-button>
-          <el-button @click="logout">退出登录</el-button>
-        </div>
-      </div>
+      </header>
 
-      <el-row :gutter="20">
-        <el-col :xs="24" :md="9">
-          <el-card shadow="never">
-            <div slot="header">
-              <span>{{ editingCode ? '编辑二维码' : '创建二维码' }}</span>
+      <!-- 主内容 -->
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
+        <el-row :gutter="24">
+          <!-- ======== 左列：创建/编辑 + 二维码预览 ======== -->
+          <el-col :xs="24" :md="9" class="mb-6 md:mb-0">
+            <div class="space-y-6">
+              <!-- 创建/编辑表单卡片 -->
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <span class="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></span>
+                    <span class="text-base font-semibold text-gray-800">{{ editingCode ? '编辑二维码' : '创建二维码' }}</span>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <el-form label-position="top" :model="form">
+                    <el-form-item label="名称">
+                      <el-input
+                        v-model="form.name"
+                        placeholder="例如：公众号6月活动"
+                        maxlength="100"
+                        show-word-limit
+                        class="rounded-lg"
+                      />
+                    </el-form-item>
+
+                    <el-form-item label="目标链接">
+                      <el-input
+                        v-model="form.targetUrl"
+                        type="textarea"
+                        :rows="4"
+                        placeholder="https://www.example.com/activity"
+                        class="rounded-lg"
+                      />
+                    </el-form-item>
+
+                    <el-form-item class="mb-0">
+                      <div class="flex gap-3">
+                        <el-button type="primary" :loading="saving" @click="submitForm" class="rounded-lg flex-1">
+                          {{ editingCode ? '保存修改' : '生成二维码' }}
+                        </el-button>
+                        <el-button v-if="editingCode" @click="cancelEdit" class="rounded-lg">取消</el-button>
+                      </div>
+                    </el-form-item>
+                  </el-form>
+                </div>
+              </div>
+
+              <!-- 二维码预览卡片 -->
+              <div v-if="currentQr" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-slide-up">
+                <div class="px-6 py-4 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <span class="w-1 h-5 bg-gradient-to-b from-emerald-500 to-teal-600 rounded-full"></span>
+                    <span class="text-base font-semibold text-gray-800">二维码预览</span>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <div class="flex justify-center mb-4">
+                    <div class="p-3 bg-gray-50 rounded-xl">
+                      <img :src="currentQr.qrImageUrl" alt="二维码" class="w-48 h-48" />
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
+                    <div class="flex items-start gap-2">
+                      <span class="text-gray-400 font-medium w-12 shrink-0">短码</span>
+                      <span class="text-gray-700 font-mono">{{ currentQr.code }}</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                      <span class="text-gray-400 font-medium w-12 shrink-0">统计</span>
+                      <a :href="currentQr.trackUrl" target="_blank" class="text-blue-600 hover:text-blue-700 truncate">{{ currentQr.trackUrl }}</a>
+                    </div>
+                    <div class="flex items-start gap-2">
+                      <span class="text-gray-400 font-medium w-12 shrink-0">目标</span>
+                      <a :href="currentQr.targetUrl" target="_blank" class="text-blue-600 hover:text-blue-700 truncate">{{ currentQr.targetUrl }}</a>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-3 mt-4">
+                    <el-button @click="copyText(currentQr.trackUrl)" class="rounded-lg flex-1" icon="el-icon-document-copy">复制统计链接</el-button>
+                    <el-button type="primary" @click="downloadQr(currentQr)" class="rounded-lg flex-1" icon="el-icon-download">下载二维码</el-button>
+                  </div>
+                </div>
+              </div>
             </div>
+          </el-col>
 
-            <el-form label-width="90px" :model="form">
-              <el-form-item label="名称">
-                <el-input v-model="form.name" placeholder="例如：公众号6月活动" maxlength="100" show-word-limit />
-              </el-form-item>
-
-              <el-form-item label="目标链接">
-                <el-input v-model="form.targetUrl" type="textarea" :rows="4" placeholder="https://www.example.com/activity" />
-              </el-form-item>
-
-              <el-form-item>
-                <el-button type="primary" :loading="saving" @click="submitForm">
-                  {{ editingCode ? '保存修改' : '生成二维码' }}
-                </el-button>
-                <el-button v-if="editingCode" @click="cancelEdit">取消</el-button>
-              </el-form-item>
-            </el-form>
-          </el-card>
-
-          <el-card v-if="currentQr" class="mt20" shadow="never">
-            <div slot="header">
-              <span>二维码</span>
-            </div>
-
-            <div class="qr-preview">
-              <img :src="currentQr.qrImageUrl" alt="二维码" />
-            </div>
-
-            <el-descriptions :column="1" border size="small">
-              <el-descriptions-item label="短码">{{ currentQr.code }}</el-descriptions-item>
-              <el-descriptions-item label="统计链接">
-                <el-link :href="currentQr.trackUrl" target="_blank" type="primary">{{ currentQr.trackUrl }}</el-link>
-              </el-descriptions-item>
-              <el-descriptions-item label="目标链接">
-                <el-link :href="currentQr.targetUrl" target="_blank" type="primary">{{ currentQr.targetUrl }}</el-link>
-              </el-descriptions-item>
-            </el-descriptions>
-
-            <div class="actions">
-              <el-button @click="copyText(currentQr.trackUrl)">复制统计链接</el-button>
-              <el-button type="primary" @click="downloadQr(currentQr)">下载二维码</el-button>
-            </div>
-          </el-card>
-        </el-col>
-
-        <el-col :xs="24" :md="15">
-          <el-card shadow="never">
-            <div slot="header" class="card-header">
-              <span>二维码列表</span>
-              <span class="muted">共 {{ qrList.length }} 个</span>
-            </div>
-
-            <el-table :data="qrList" v-loading="loading" border size="small" style="width: 100%">
-              <el-table-column prop="name" label="名称" min-width="150" show-overflow-tooltip />
-              <el-table-column prop="code" label="短码" width="100" />
-              <el-table-column prop="pv" label="PV" width="80" />
-              <el-table-column prop="uv" label="UV" width="80" />
-              <el-table-column prop="todayPv" label="今日" width="80" />
-              <el-table-column label="状态" width="90">
-                <template slot-scope="scope">
-                  <el-tag :type="scope.row.enabled ? 'success' : 'info'" size="mini">
-                    {{ scope.row.enabled ? '启用' : '停用' }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" width="310" fixed="right">
-                <template slot-scope="scope">
-                  <el-button size="mini" @click="selectQr(scope.row)">查看</el-button>
-                  <el-button size="mini" @click="startEdit(scope.row)">编辑</el-button>
-                  <el-button size="mini" type="primary" @click="openStats(scope.row)">统计</el-button>
-                  <el-button
-                    size="mini"
-                    :type="scope.row.enabled ? 'warning' : 'success'"
-                    @click="toggleEnabled(scope.row)"
+          <!-- ======== 右列：二维码列表 + 统计详情 ======== -->
+          <el-col :xs="24" :md="15">
+            <div class="space-y-6">
+              <!-- 二维码列表卡片 -->
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1 h-5 bg-gradient-to-b from-violet-500 to-purple-600 rounded-full"></span>
+                      <span class="text-base font-semibold text-gray-800">二维码列表</span>
+                    </div>
+                    <el-tag size="small" type="info" effect="plain" class="rounded-lg">
+                      共 {{ qrList.length }} 个
+                    </el-tag>
+                    <el-button size="mini" @click="exportCsv" class="rounded-lg" type="success" plain icon="el-icon-download">导出</el-button>
+                  </div>
+                </div>
+                <div class="p-4">
+                  <el-table
+                    :data="qrList"
+                    v-loading="loading"
+                    border
+                    size="small"
+                    style="width: 100%"
+                    :header-cell-style="{ background: '#f8fafc', color: '#475569', fontWeight: 600 }"
                   >
-                    {{ scope.row.enabled ? '停用' : '启用' }}
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
+                    <el-table-column prop="name" label="名称" min-width="150" show-overflow-tooltip />
+                    <el-table-column prop="code" label="短码" width="90" />
+                    <el-table-column prop="pv" label="PV" width="70" align="center" />
+                    <el-table-column prop="uv" label="UV" width="70" align="center" />
+                    <el-table-column prop="todayPv" label="今日" width="70" align="center">
+                      <template slot-scope="scope">
+                        <span class="text-blue-600 font-semibold">{{ scope.row.todayPv }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="状态" width="80" align="center">
+                      <template slot-scope="scope">
+                        <el-tag :type="scope.row.enabled ? 'success' : 'info'" size="mini" effect="light" class="rounded-md">
+                          {{ scope.row.enabled ? '启用' : '停用' }}
+                        </el-tag>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="290" fixed="right">
+                      <template slot-scope="scope">
+                        <div class="flex gap-1.5">
+                          <el-button size="mini" @click="selectQr(scope.row)" class="rounded-md">查看</el-button>
+                          <el-button size="mini" @click="startEdit(scope.row)" class="rounded-md">编辑</el-button>
+                          <el-button size="mini" type="primary" @click="openStats(scope.row)" class="rounded-md">统计</el-button>
+                          <el-button
+                            size="mini"
+                            :type="scope.row.enabled ? 'warning' : 'success'"
+                            @click="toggleEnabled(scope.row)"
+                            class="rounded-md"
+                          >
+                            {{ scope.row.enabled ? '停用' : '启用' }}
+                          </el-button>
+                        </div>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+              </div>
 
-          <el-card v-if="stats" class="mt20" shadow="never">
-            <div slot="header" class="card-header">
-              <span>统计详情：{{ stats.qrCode.name }}</span>
-              <el-button size="mini" @click="openStats(stats.qrCode)">刷新统计</el-button>
+              <!-- 统计详情卡片 -->
+              <div v-if="stats" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-slide-up">
+                <div class="px-6 py-4 border-b border-gray-100">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1 h-5 bg-gradient-to-b from-amber-500 to-orange-600 rounded-full"></span>
+                      <span class="text-base font-semibold text-gray-800">统计详情：{{ stats.qrCode.name }}</span>
+                    </div>
+                    <el-button size="mini" @click="openStats(stats.qrCode)" class="rounded-lg" icon="el-icon-refresh">刷新</el-button>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <!-- 统计概览卡片 -->
+                  <el-row :gutter="16" class="mb-6">
+                    <el-col :span="8">
+                      <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                          <span class="text-sm text-gray-400 font-medium">总访问 PV</span>
+                          <span class="text-2xl">👁️</span>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-800">{{ stats.pv }}</div>
+                        <div class="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div class="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full" style="width: 100%"></div>
+                        </div>
+                      </div>
+                    </el-col>
+                    <el-col :span="8">
+                      <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                          <span class="text-sm text-gray-400 font-medium">大致访客 UV</span>
+                          <span class="text-2xl">👤</span>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-800">{{ stats.uv }}</div>
+                        <div class="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full" style="width: 100%"></div>
+                        </div>
+                      </div>
+                    </el-col>
+                    <el-col :span="8">
+                      <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                          <span class="text-sm text-gray-400 font-medium">今日 PV</span>
+                          <span class="text-2xl">📊</span>
+                        </div>
+                        <div class="text-3xl font-bold text-blue-600">{{ stats.todayPv }}</div>
+                        <div class="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div class="h-full bg-gradient-to-r from-violet-400 to-violet-600 rounded-full" style="width: 100%"></div>
+                        </div>
+                      </div>
+                    </el-col>
+                  </el-row>
+
+                  <!-- 最近 7 天趋势 -->
+                  <h3 class="text-base font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                    最近 7 天趋势
+                  </h3>
+                  <div class="bg-gray-50 rounded-xl p-4 mb-4">
+                    <trend-chart :data="stats.last7Days" />
+                  </div>
+                  <el-table :data="stats.last7Days" border size="small" style="width: 100%" class="mb-6">
+                    <el-table-column prop="date" label="日期" />
+                    <el-table-column prop="pv" label="PV" align="center">
+                      <template slot-scope="scope">
+                        <span class="text-blue-600 font-medium">{{ scope.row.pv }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="uv" label="UV" align="center">
+                      <template slot-scope="scope">
+                        <span class="text-emerald-600 font-medium">{{ scope.row.uv }}</span>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+
+                  <!-- 最近访问记录 -->
+                  <h3 class="text-base font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                    最近访问记录
+                  </h3>
+                  <el-row :gutter="16" class="mb-4">
+                    <el-col :span="24" :md="10" class="mb-4 md:mb-0">
+                      <div class="bg-gray-50 rounded-xl p-4 h-full">
+                        <h4 class="text-sm text-gray-500 font-medium mb-2">浏览器分布</h4>
+                        <browser-chart :visits="stats.latestVisits" />
+                      </div>
+                    </el-col>
+                    <el-col :span="24" :md="14">
+                  <el-table :data="stats.latestVisits" border size="small" style="width: 100%">
+                    <el-table-column prop="createdAt" label="访问时间" width="165" />
+                    <el-table-column prop="ip" label="IP" width="130" />
+                    <el-table-column prop="device" label="设备" width="95" />
+                    <el-table-column prop="browser" label="浏览器" width="120" />
+                    <el-table-column prop="referer" label="来源" min-width="160" show-overflow-tooltip />
+                    <el-table-column prop="userAgent" label="User-Agent" min-width="220" show-overflow-tooltip />
+                  </el-table>
+                    </el-col>
+                  </el-row>
+                </div>
+              </div>
             </div>
-
-            <el-row :gutter="12">
-              <el-col :span="8">
-                <div class="stat-box">
-                  <div class="stat-value">{{ stats.pv }}</div>
-                  <div class="stat-label">总访问 PV</div>
-                </div>
-              </el-col>
-              <el-col :span="8">
-                <div class="stat-box">
-                  <div class="stat-value">{{ stats.uv }}</div>
-                  <div class="stat-label">大致访客 UV</div>
-                </div>
-              </el-col>
-              <el-col :span="8">
-                <div class="stat-box">
-                  <div class="stat-value">{{ stats.todayPv }}</div>
-                  <div class="stat-label">今日 PV</div>
-                </div>
-              </el-col>
-            </el-row>
-
-            <h3>最近 7 天</h3>
-            <el-table :data="stats.last7Days" border size="small">
-              <el-table-column prop="date" label="日期" />
-              <el-table-column prop="pv" label="PV" />
-              <el-table-column prop="uv" label="UV" />
-            </el-table>
-
-            <h3>最近访问记录</h3>
-            <el-table :data="stats.latestVisits" border size="small">
-              <el-table-column prop="createdAt" label="访问时间" width="170" />
-              <el-table-column prop="ip" label="IP" width="140" />
-              <el-table-column prop="device" label="设备" width="100" />
-              <el-table-column prop="browser" label="浏览器" width="130" />
-              <el-table-column prop="referer" label="来源" min-width="180" show-overflow-tooltip />
-              <el-table-column prop="userAgent" label="User-Agent" min-width="260" show-overflow-tooltip />
-            </el-table>
-          </el-card>
-        </el-col>
-      </el-row>
+          </el-col>
+        </el-row>
+      </main>
     </template>
   </div>
 </template>
@@ -196,8 +361,15 @@ import {
   updateQrEnabled
 } from './api/qrcode'
 
+import TrendChart from './components/TrendChart.vue'
+import BrowserChart from './components/BrowserChart.vue'
+
 export default {
   name: 'App',
+  components: {
+    TrendChart,
+    BrowserChart,
+  },
   data() {
     return {
       loggedIn: !!getToken(),
@@ -374,135 +546,88 @@ export default {
     },
 
     downloadQr(qr) {
+      const imageUrl = qr.qrImageUrl
+      const filename = `${qr.name || qr.code}.png`
+      // 用 fetch 获取图片 Blob 后触发下载（绕过跨域限制）
+      fetch(imageUrl, { credentials: 'include' })
+        .then(res => res.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = filename
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          URL.revokeObjectURL(url)
+        })
+        .catch(() => {
+          // fallback：直接打开图片
+          window.open(imageUrl, '_blank')
+        })
+    },
+    
+    exportCsv() {
+      if (!this.qrList.length) {
+        this.$message.warning('没有数据可导出')
+        return
+      }
+      const headers = ['名称', '短码', 'PV', 'UV', '今日PV', '状态']
+      const rows = this.qrList.map(r => [
+        r.name,
+        r.code,
+        r.pv,
+        r.uv,
+        r.todayPv,
+        r.enabled ? '启用' : '停用'
+      ])
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+      // 处理中文编码
+      const BOM = '\uFEFF'
+      const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
+      const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      a.href = qr.qrImageUrl
-      a.download = `${qr.name || qr.code}.png`
-      a.target = '_blank'
+      a.href = url
+      a.download = `二维码列表_${new Date().toISOString().slice(0,10)}.csv`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
-    }
+      URL.revokeObjectURL(url)
+      this.$message.success('导出成功')
+    },
   }
 }
 </script>
 
 <style>
-body {
-  margin: 0;
-  background: #f5f7fa;
-  font-family: Helvetica Neue, Arial, PingFang SC, Microsoft YaHei, sans-serif;
+/* Element UI 圆角美化 */
+.el-input__inner,
+.el-textarea__inner {
+  border-radius: 10px !important;
+}
+.el-input__inner:focus,
+.el-textarea__inner:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+.el-button {
+  border-radius: 10px !important;
+}
+.el-button--mini {
+  border-radius: 8px !important;
+}
+.el-message {
+  border-radius: 12px !important;
+}
+.el-loading-mask {
+  border-radius: 12px !important;
 }
 
-.app {
-  padding: 24px;
+/* 过渡动画 */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
 }
-
-.login-page {
-  min-height: calc(100vh - 48px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.login-card {
-  width: 430px;
-}
-
-.login-title {
-  text-align: center;
-  margin-bottom: 22px;
-}
-
-.login-title h1 {
-  margin: 0 0 8px;
-  font-size: 26px;
-}
-
-.login-title p {
-  margin: 0;
-  color: #606266;
-  font-size: 14px;
-}
-
-.login-tip {
-  margin-top: 12px;
-  color: #909399;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.header h1 {
-  margin: 0 0 8px;
-  font-size: 28px;
-}
-
-.header p {
-  margin: 0;
-  color: #606266;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mt20 {
-  margin-top: 20px;
-}
-
-.qr-preview {
-  text-align: center;
-  margin-bottom: 18px;
-}
-
-.qr-preview img {
-  width: 220px;
-  height: 220px;
-  border: 1px solid #ebeef5;
-  border-radius: 4px;
-}
-
-.actions {
-  margin-top: 16px;
-  display: flex;
-  gap: 10px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.muted {
-  color: #909399;
-  font-size: 13px;
-}
-
-.stat-box {
-  background: #f5f7fa;
-  border-radius: 6px;
-  padding: 20px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: bold;
-  line-height: 1.2;
-}
-
-.stat-label {
-  margin-top: 8px;
-  color: #606266;
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 </style>

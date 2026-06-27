@@ -31,6 +31,11 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         }
 
         String path = request.getRequestURI();
+        // context-path 下需要截掉前缀（如 /qr），再与 api 路径匹配
+        String cp = request.getContextPath();
+        if (cp != null && !cp.isEmpty()) {
+            path = path.substring(cp.length());
+        }
         if (isPublicApi(path, request.getMethod())) {
             return true;
         }

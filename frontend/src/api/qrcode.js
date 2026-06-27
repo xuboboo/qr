@@ -5,10 +5,10 @@ const USERNAME_KEY = 'qr_stat_admin_username'
 
 const isProd = process.env.NODE_ENV === 'production'
 
-// 生产：页面在 /qr/ 下，用相对路径 api/xxx 自动适配 /qr 前缀
+// 生产：页面在 /qr/ 下，API 用 /qr/api 绝对路径（不管有没有尾斜杠都稳定）
 // 开发：用代理 /api → localhost:8080
 const request = axios.create({
-  baseURL: isProd ? 'api' : '/api',
+  baseURL: isProd ? '/qr/api' : '/api',
   timeout: 15000
 })
 
