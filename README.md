@@ -58,41 +58,6 @@ npm run serve
 http://localhost:8081
 ```
 
-## 默认登录账号
-
-后台管理页已经加了登录保护。
-
-```text
-用户名：admin
-密码：ChangeMe123!
-```
-
-生产环境请修改默认账号密码，不要直接使用默认值。
-
-推荐通过环境变量设置：
-
-```bash
-export QR_ADMIN_USERNAME=admin
-export QR_ADMIN_PASSWORD='你的强密码'
-export QR_SESSION_EXPIRE_MINUTES=720
-```
-
-也可以直接修改：
-
-```text
-backend/src/main/resources/application.yml
-```
-
-```yaml
-app:
-  security:
-    enabled: true
-    admin-username: ${QR_ADMIN_USERNAME:admin}
-    admin-password: ${QR_ADMIN_PASSWORD:ChangeMe123!}
-    session-expire-minutes: ${QR_SESSION_EXPIRE_MINUTES:720}
-```
-
-说明：登录成功后，后端会生成随机 Token，并保存在服务端内存里；前端只保存这个登录 Token，不再使用固定写死的管理 Token。
 
 ## 安全说明
 
