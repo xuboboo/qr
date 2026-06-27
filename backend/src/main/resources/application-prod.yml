@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /qr
+
+spring:
+  h2:
+    console:
+      enabled: false
+  sql:
+    init:
+      mode: never
+
+app:
+  # 正式域名，二维码里写入的统计链接基于此域名
+  public-domain: https://api.xubobo.top/qr
+  # 可选：限制只能跳转到你的域名
+  # allowed-target-hosts: xubobo.top,www.xubobo.top
+
+  security:
+    enabled: true
+    # 生产环境务必通过环境变量设置密码，不要写在配置文件里
+    admin-username: ${QR_ADMIN_USERNAME:admin}
+    admin-password: ${QR_ADMIN_PASSWORD}
+    session-expire-minutes: ${QR_ADMIN_SESSION_MINUTES:720}

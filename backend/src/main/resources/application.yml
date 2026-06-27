@@ -1,3 +1,10 @@
+# 开发环境配置。生产环境请使用 prod profile：
+#   java -jar qr-stat-backend.jar --spring.profiles.active=prod
+# 或者设环境变量：SPRING_PROFILES_ACTIVE=prod
+#
+# prod profile 文件：application-prod.yml
+# 它会关闭 H2 控制台、关闭 sql.init、启用 context-path=/qr
+
 server:
   port: 8080
   servlet:

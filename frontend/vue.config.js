@@ -1,4 +1,7 @@
+const isProd = process.env.NODE_ENV === 'production'
+
 module.exports = {
+  publicPath: isProd ? '/qr/' : '/',
   devServer: {
     port: 8081,
     proxy: {
