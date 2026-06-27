@@ -59,7 +59,7 @@ public class AppProperties {
     public static class Security {
         private boolean enabled = true;
         private String adminUsername = "admin";
-        private String adminPassword = "ChangeMe123!";
+        private String adminPassword = "changeme";
         private int sessionExpireMinutes = 720;
 
         public boolean isEnabled() {

@@ -27,9 +27,6 @@
           </el-form-item>
         </el-form>
 
-        <div class="login-tip">
-          默认账号：admin / ChangeMe123!，生产环境请在后端配置或环境变量中修改。
-        </div>
       </el-card>
     </div>
 
