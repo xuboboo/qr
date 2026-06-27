@@ -1,7 +1,5 @@
 server:
   port: 8080
-  servlet:
-    context-path: /qr
 
 spring:
   h2:
@@ -12,8 +10,8 @@ spring:
       mode: never
 
 app:
-  # 正式域名，二维码里写入的统计链接基于此域名
-  public-domain: https://api.xubobo.top/qr
+  # 正式域名，二维码里写入的统计链接基于此域名（后端 API 在根路径）
+  public-domain: https://api.xubobo.top
   # 可选：限制只能跳转到你的域名
   # allowed-target-hosts: xubobo.top,www.xubobo.top
 
