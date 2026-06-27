@@ -1,0 +1,36 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: qr-stat-backend
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./data/qrstat;MODE=MySQL;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+app:
+  # 正式部署时改成公网 HTTPS 域名，例如：https://qr.yourcompany.com
+  public-domain: http://localhost:8080
+  qr-size: 300
+  # 目标链接白名单，空表示不限制。生产环境建议配置公司域名，例如：yourcompany.com,www.yourcompany.com
+  allowed-target-hosts:
+  # 是否阻止跳转到内网 IP/localhost，建议保持 true
+  block-private-address: true
