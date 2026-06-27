@@ -12,8 +12,9 @@ public class AppProperties {
 
     private String publicDomain = "http://localhost:8080";
     private int qrSize = 300;
-    private List<String> allowedTargetHosts = new ArrayList<>();
+    private List<String> allowedTargetHosts = new ArrayList<String>();
     private boolean blockPrivateAddress = true;
+    private Security security = new Security();
 
     public String getPublicDomain() {
         return publicDomain;
@@ -45,5 +46,52 @@ public class AppProperties {
 
     public void setBlockPrivateAddress(boolean blockPrivateAddress) {
         this.blockPrivateAddress = blockPrivateAddress;
+    }
+
+    public Security getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(Security security) {
+        this.security = security;
+    }
+
+    public static class Security {
+        private boolean enabled = true;
+        private String adminUsername = "admin";
+        private String adminPassword = "ChangeMe123!";
+        private int sessionExpireMinutes = 720;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public String getAdminUsername() {
+            return adminUsername;
+        }
+
+        public void setAdminUsername(String adminUsername) {
+            this.adminUsername = adminUsername;
+        }
+
+        public String getAdminPassword() {
+            return adminPassword;
+        }
+
+        public void setAdminPassword(String adminPassword) {
+            this.adminPassword = adminPassword;
+        }
+
+        public int getSessionExpireMinutes() {
+            return sessionExpireMinutes;
+        }
+
+        public void setSessionExpireMinutes(int sessionExpireMinutes) {
+            this.sessionExpireMinutes = sessionExpireMinutes;
+        }
     }
 }

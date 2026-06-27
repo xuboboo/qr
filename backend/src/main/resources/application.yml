@@ -34,3 +34,12 @@ app:
   allowed-target-hosts:
   # 是否阻止跳转到内网 IP/localhost，建议保持 true
   block-private-address: true
+
+  security:
+    # true：后台管理接口需要登录；/q/{code} 扫码跳转接口不受影响
+    enabled: true
+    # 生产环境建议通过环境变量设置，不要直接写在代码仓库里
+    admin-username: ${QR_ADMIN_USERNAME:admin}
+    admin-password: ${QR_ADMIN_PASSWORD:ChangeMe123!}
+    # 登录会话过期时间，单位：分钟。默认 720 分钟，即 12 小时
+    session-expire-minutes: ${QR_SESSION_EXPIRE_MINUTES:720}
