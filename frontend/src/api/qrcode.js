@@ -3,8 +3,12 @@ import axios from 'axios'
 const TOKEN_KEY = 'qr_stat_admin_token'
 const USERNAME_KEY = 'qr_stat_admin_username'
 
+const isProd = process.env.NODE_ENV === 'production'
+
+// 生产：页面在 /qr/ 下，用相对路径 api/xxx 自动适配 /qr 前缀
+// 开发：用代理 /api → localhost:8080
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: isProd ? 'api' : '/api',
   timeout: 15000
 })
 
@@ -56,30 +60,30 @@ request.interceptors.response.use(
 )
 
 export function login(payload) {
-  return request.post('/auth/login', payload)
+  return request.post('auth/login', payload)
 }
 
 export function createQr(payload) {
-  return request.post('/qrcodes', payload)
+  return request.post('qrcodes', payload)
 }
 
 export function updateQr(code, payload) {
-  return request.put(`/qrcodes/${code}`, payload)
+  return request.put(`qrcodes/${code}`, payload)
 }
 
 export function updateQrEnabled(code, enabled) {
-  return request.put(`/qrcodes/${code}/enabled?enabled=${enabled}`)
+  return request.put(`qrcodes/${code}/enabled?enabled=${enabled}`)
 }
 
 export function listQr() {
-  return request.get('/qrcodes')
+  return request.get('qrcodes')
 }
 
 export function getStats(code) {
-  return request.get(`/qrcodes/${code}/stats`)
+  return request.get(`qrcodes/${code}/stats`)
 }
 
 
 export function logoutRequest() {
-  return request.post('/auth/logout')
+  return request.post('auth/logout')
 }
