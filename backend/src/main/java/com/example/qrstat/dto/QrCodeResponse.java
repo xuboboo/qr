@@ -14,6 +14,7 @@ public class QrCodeResponse {
     private Long pv;
     private Long uv;
     private Long todayPv;
+    private Long todayUv;
     private Date createdAt;
     private Date updatedAt;
 
@@ -95,6 +96,14 @@ public class QrCodeResponse {
 
     public void setTodayPv(Long todayPv) {
         this.todayPv = todayPv;
+    }
+
+    public Long getTodayUv() {
+        return todayUv;
+    }
+
+    public void setTodayUv(Long todayUv) {
+        this.todayUv = todayUv;
     }
 
     public Date getCreatedAt() {

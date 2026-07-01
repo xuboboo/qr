@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import { Chart, ArcElement, Tooltip, Legend } from 'chart.js'
-Chart.register(ArcElement, Tooltip, Legend)
+import { Chart, ArcElement, DoughnutController, Tooltip, Legend } from 'chart.js'
+Chart.register(ArcElement, DoughnutController, Tooltip, Legend)
 
 export default {
   name: 'BrowserChart',

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/qrcodes")
@@ -38,6 +39,34 @@ public class QrCodeController {
     public ApiResponse<QrCodeResponse> updateEnabled(@PathVariable String code, @RequestParam boolean enabled) {
         qrImageService.evictCache(code);
         return ApiResponse.ok(qrCodeService.updateEnabled(code, enabled));
+    }
+
+    @DeleteMapping("/{code}")
+    public ApiResponse<Void> delete(@PathVariable String code) {
+        qrImageService.evictCache(code);
+        qrCodeService.delete(code);
+        return ApiResponse.ok(null);
+    }
+
+    @PostMapping("/batch-delete")
+    public ApiResponse<Void> batchDelete(@RequestBody List<String> codes) {
+        for (String code : codes) {
+            qrImageService.evictCache(code);
+        }
+        qrCodeService.batchDelete(codes);
+        return ApiResponse.ok(null);
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<List<QrCodeResponse>> search(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Boolean enabled) {
+        return ApiResponse.ok(qrCodeService.search(keyword, enabled));
+    }
+
+    @GetMapping("/summary")
+    public ApiResponse<Map<String, Object>> summary() {
+        return ApiResponse.ok(qrCodeService.summary());
     }
 
     @GetMapping

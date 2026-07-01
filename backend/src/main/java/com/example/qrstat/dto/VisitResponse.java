@@ -7,6 +7,7 @@ public class VisitResponse {
     private Long id;
     private String qrCode;
     private String ip;
+    private String location;
     private String userAgent;
     private String referer;
     private String visitDate;
@@ -36,6 +37,14 @@ public class VisitResponse {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getUserAgent() {

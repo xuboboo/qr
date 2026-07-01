@@ -11,6 +11,7 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  LineController,
   Title,
   Tooltip,
   Legend,
@@ -18,7 +19,7 @@ import {
 } from 'chart.js'
 
 Chart.register(
-  CategoryScale, LinearScale, PointElement, LineElement,
+  CategoryScale, LinearScale, PointElement, LineElement, LineController,
   Title, Tooltip, Legend, Filler
 )
 

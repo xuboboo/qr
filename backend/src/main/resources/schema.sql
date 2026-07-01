@@ -22,3 +22,6 @@ CREATE INDEX IF NOT EXISTS idx_qr_code_code ON qr_code(code);
 CREATE INDEX IF NOT EXISTS idx_qr_visit_code ON qr_visit(qr_code);
 CREATE INDEX IF NOT EXISTS idx_qr_visit_date ON qr_visit(visit_date);
 CREATE INDEX IF NOT EXISTS idx_qr_visit_code_date ON qr_visit(qr_code, visit_date);
+
+-- 新增 location 字段（幂等）
+ALTER TABLE qr_visit ADD COLUMN IF NOT EXISTS location VARCHAR(200);

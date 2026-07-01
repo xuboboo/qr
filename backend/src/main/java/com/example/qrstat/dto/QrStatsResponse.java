@@ -9,6 +9,7 @@ public class QrStatsResponse {
     private Long pv;
     private Long uv;
     private Long todayPv;
+    private Long todayUv;
     private List<DayStatResponse> last7Days = new ArrayList<DayStatResponse>();
     private List<VisitResponse> latestVisits = new ArrayList<VisitResponse>();
 
@@ -42,6 +43,14 @@ public class QrStatsResponse {
 
     public void setTodayPv(Long todayPv) {
         this.todayPv = todayPv;
+    }
+
+    public Long getTodayUv() {
+        return todayUv;
+    }
+
+    public void setTodayUv(Long todayUv) {
+        this.todayUv = todayUv;
     }
 
     public List<DayStatResponse> getLast7Days() {

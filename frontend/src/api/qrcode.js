@@ -87,3 +87,51 @@ export function getStats(code) {
 export function logoutRequest() {
   return request.post('auth/logout')
 }
+
+export function deleteQr(code) {
+  return request.delete(`qrcodes/${code}`)
+}
+
+export function batchDeleteQr(codes) {
+  return request.post('qrcodes/batch-delete', codes)
+}
+
+export function searchQr(keyword, enabled) {
+  const params = new URLSearchParams()
+  if (keyword) params.append('keyword', keyword)
+  if (enabled !== null && enabled !== undefined) params.append('enabled', enabled)
+  return request.get(`qrcodes/search?${params.toString()}`)
+}
+
+export function getSummary() {
+  return request.get('qrcodes/summary')
+}
+
+export function getRefererStats(code) {
+  const url = code ? `visits/referer?code=${code}` : 'visits/referer'
+  return request.get(url)
+}
+
+export function getHourStats(code) {
+  const url = code ? `visits/hour?code=${code}` : 'visits/hour'
+  return request.get(url)
+}
+
+export function getDeviceStats(code) {
+  const url = code ? `visits/device?code=${code}` : 'visits/device'
+  return request.get(url)
+}
+
+export function getBrowserStats(code) {
+  const url = code ? `visits/browser?code=${code}` : 'visits/browser'
+  return request.get(url)
+}
+
+export function getLocationStats(code) {
+  const url = code ? `visits/location?code=${code}` : 'visits/location'
+  return request.get(url)
+}
+
+export function checkApiStatus() {
+  return request.get('status')
+}

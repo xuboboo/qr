@@ -46,22 +46,36 @@ public class WebConfig implements WebMvcConfigurer {
             }
         }
 
-        registry.addMapping("/api/**")
-                .allowedOrigins(
-                        "http://localhost:8081",
-                        "http://127.0.0.1:8081",
-                        domainOrigin
-                )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(false)
-                .maxAge(3600);
+        // 仅在开发环境（public-domain 为 localhost）时允许开发服务器源
+        boolean isDev = domainOrigin != null && domainOrigin.contains("localhost");
+
+        if (isDev) {
+            registry.addMapping("/api/**")
+                    .allowedOrigins(
+                            "http://localhost:8081",
+                            "http://127.0.0.1:8081",
+                            "http://localhost:8001",
+                            "http://127.0.0.1:8001",
+                            domainOrigin
+                    )
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(false)
+                    .maxAge(3600);
+        } else {
+            registry.addMapping("/api/**")
+                    .allowedOrigins(domainOrigin)
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(false)
+                    .maxAge(3600);
+        }
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminAuthInterceptor)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/auth/login");
+                .excludePathPatterns("/api/auth/login", "/api/status");
     }
 }

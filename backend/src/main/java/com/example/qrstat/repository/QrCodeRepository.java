@@ -77,4 +77,38 @@ public class QrCodeRepository {
     public List<QrCode> findAll() {
         return jdbcTemplate.query("SELECT * FROM qr_code ORDER BY id DESC", mapper);
     }
+
+    public int deleteByCode(String code) {
+        return jdbcTemplate.update("DELETE FROM qr_code WHERE code = ?", code);
+    }
+
+    public int deleteByCodes(List<String> codes) {
+        if (codes == null || codes.isEmpty()) {
+            return 0;
+        }
+        String placeholders = String.join(",", codes.stream().map(c -> "?").toArray(String[]::new));
+        return jdbcTemplate.update("DELETE FROM qr_code WHERE code IN (" + placeholders + ")", codes.toArray());
+    }
+
+    public List<QrCode> search(String keyword, Boolean enabled) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM qr_code WHERE 1=1");
+        java.util.List<Object> params = new java.util.ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND name LIKE ?");
+            params.add("%" + keyword.trim() + "%");
+        }
+        if (enabled != null) {
+            sql.append(" AND enabled = ?");
+            params.add(enabled ? 1 : 0);
+        }
+        sql.append(" ORDER BY id DESC");
+
+        return jdbcTemplate.query(sql.toString(), mapper, params.toArray());
+    }
+
+    public long countAll() {
+        Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM qr_code", Long.class);
+        return count == null ? 0L : count;
+    }
 }

@@ -8,6 +8,7 @@ import com.example.qrstat.model.QrVisit;
 import com.example.qrstat.repository.QrCodeRepository;
 import com.example.qrstat.repository.QrVisitRepository;
 import com.example.qrstat.util.CodeGenerator;
+import com.example.qrstat.util.IpUtil;
 import com.example.qrstat.util.UserAgentUtil;
 import com.example.qrstat.util.UrlValidator;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,38 @@ public class QrCodeService {
         return toResponse(qrCodeRepository.findByCode(code), true);
     }
 
+    @Transactional
+    public void delete(String code) {
+        getByCodeOrThrow(code);
+        qrVisitRepository.deleteByQrCode(code);
+        qrCodeRepository.deleteByCode(code);
+    }
+
+    @Transactional
+    public void batchDelete(List<String> codes) {
+        qrVisitRepository.deleteByQrCodes(codes);
+        qrCodeRepository.deleteByCodes(codes);
+    }
+
+    public List<QrCodeResponse> search(String keyword, Boolean enabled) {
+        List<QrCode> list = qrCodeRepository.search(keyword, enabled);
+        List<QrCodeResponse> result = new ArrayList<QrCodeResponse>();
+        for (QrCode qrCode : list) {
+            result.add(toResponse(qrCode, true));
+        }
+        return result;
+    }
+
+    public Map<String, Object> summary() {
+        Map<String, Object> summary = new HashMap<String, Object>();
+        summary.put("totalQrCodes", qrCodeRepository.countAll());
+        summary.put("totalPv", qrVisitRepository.countAllPv());
+        summary.put("totalUv", qrVisitRepository.countAllUv());
+        summary.put("todayPv", qrVisitRepository.countTodayAllPv());
+        summary.put("todayUv", qrVisitRepository.countTodayAllUv());
+        return summary;
+    }
+
     public QrCode getByCodeOrThrow(String code) {
         QrCode qrCode = qrCodeRepository.findByCode(code);
         if (qrCode == null) {
@@ -103,6 +136,7 @@ public class QrCodeService {
         response.setPv(qrVisitRepository.countPv(code));
         response.setUv(qrVisitRepository.countUv(code));
         response.setTodayPv(qrVisitRepository.countTodayPv(code));
+        response.setTodayUv(qrVisitRepository.countTodayUv(code));
         response.setLast7Days(last7Days(code));
         response.setLatestVisits(toVisitResponses(qrVisitRepository.latestVisits(code, 50)));
         return response;
@@ -150,6 +184,7 @@ public class QrCodeService {
             response.setPv(qrVisitRepository.countPv(qrCode.getCode()));
             response.setUv(qrVisitRepository.countUv(qrCode.getCode()));
             response.setTodayPv(qrVisitRepository.countTodayPv(qrCode.getCode()));
+            response.setTodayUv(qrVisitRepository.countTodayUv(qrCode.getCode()));
         }
 
         return response;
@@ -183,7 +218,8 @@ public class QrCodeService {
             VisitResponse response = new VisitResponse();
             response.setId(visit.getId());
             response.setQrCode(visit.getQrCode());
-            response.setIp(visit.getIp());
+            response.setIp(IpUtil.normalizeIp(visit.getIp()));
+            response.setLocation(visit.getLocation());
             response.setUserAgent(visit.getUserAgent());
             response.setReferer(visit.getReferer());
             response.setVisitDate(visit.getVisitDate() == null ? null : new java.sql.Date(visit.getVisitDate().getTime()).toString());

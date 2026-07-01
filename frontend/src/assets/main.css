@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 全局背景色 - 消除导航栏顶部白色间隙 */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom right, #f9fafb, #eff6ff, #e0e7ff) !important;
+  min-height: 100vh;
+}
+
 /* 全局过渡动画 */
 .page-enter-active,
 .page-leave-active {
@@ -76,7 +84,6 @@
 }
 .el-table--border {
   border-radius: 10px !important;
-  overflow: hidden !important;
 }
 .el-tag--success {
   background-color: #dcfce7 !important;

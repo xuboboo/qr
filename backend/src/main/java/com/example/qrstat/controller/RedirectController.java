@@ -2,6 +2,7 @@ package com.example.qrstat.controller;
 
 import com.example.qrstat.exception.BizException;
 import com.example.qrstat.service.VisitService;
+import com.example.qrstat.util.UrlValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,9 +15,11 @@ import java.io.IOException;
 public class RedirectController {
 
     private final VisitService visitService;
+    private final UrlValidator urlValidator;
 
-    public RedirectController(VisitService visitService) {
+    public RedirectController(VisitService visitService, UrlValidator urlValidator) {
         this.visitService = visitService;
+        this.urlValidator = urlValidator;
     }
 
     @GetMapping("/q/{code}")
@@ -25,6 +28,7 @@ public class RedirectController {
                          HttpServletResponse response) throws IOException {
         try {
             String targetUrl = visitService.recordAndGetTargetUrl(code, request);
+            urlValidator.validateTargetUrl(targetUrl);
             response.sendRedirect(targetUrl);
         } catch (BizException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);

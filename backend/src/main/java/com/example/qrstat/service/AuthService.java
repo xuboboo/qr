@@ -5,6 +5,8 @@ import com.example.qrstat.dto.LoginResponse;
 import com.example.qrstat.exception.BizException;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.Map;
@@ -33,7 +35,10 @@ public class AuthService {
         String actualUsername = username == null ? "" : username.trim();
         String actualPassword = password == null ? "" : password;
 
-        if (!security.getAdminUsername().equals(actualUsername) || !security.getAdminPassword().equals(actualPassword)) {
+        if (!security.getAdminUsername().equals(actualUsername)
+                || !MessageDigest.isEqual(
+                        security.getAdminPassword().getBytes(StandardCharsets.UTF_8),
+                        actualPassword.getBytes(StandardCharsets.UTF_8))) {
             throw new BizException("用户名或密码错误");
         }
 
